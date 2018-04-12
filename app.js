@@ -38,21 +38,6 @@ $(document).ready(function () {
 
     $("#start-chat").on("click", function () {
         $("#chat-box").show();
-        // var randStr = "";
-        // for (var letter = 1; letter <= 8; letter++) {
-        //     randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
-        // }
-        // console.log(randStr);
-        // //this is used to determine the session for each chat and only pull from that session
-        // localKey = randStr;
-
-        // if (localStorage.getItem("localKey") === null) {
-        //     localStorage.setItem("localKey", localKey);
-        // } else {
-        //     localKey = localStorage.getItem("localKey");
-        // }
-
-        // getMessages();
     });
 
     $("#send-message").on("click", function () {
