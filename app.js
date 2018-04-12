@@ -2,15 +2,9 @@ $(document).ready(function () {
 
     var messageKey = '';
     var messageText = '';
-    var randStr = "";
-    for (var letter = 1; letter <= 8; letter++) {
-        randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
-    }
-    console.log(randStr);
-    //this is used to determine the session for each chat and only pull from that session
-    var localKey = randStr;
+    var localKey = '';
+    var userName = '';
 
-    localStorage.setItem("localKey", localKey);
 
     var config = {
         apiKey: "AIzaSyA5M-HShYfmi1BIVC7_zZlzLp8G9ttmQJw",
@@ -27,22 +21,37 @@ $(document).ready(function () {
 
     $("#start-chat").on("click", function () {
         $("#chat-box").show();
+        var randStr = "";
+        for (var letter = 1; letter <= 8; letter++) {
+            randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
+        }
+        console.log(randStr);
+        //this is used to determine the session for each chat and only pull from that session
+        localKey = randStr;
+
+        if (localStorage.getItem("localKey") === null) {
+            localStorage.setItem("localKey", localKey);
+        } else {
+            localKey = localStorage.getItem("localKey");
+        }
     });
 
     $("#send-message").on("click", function () {
         messageText = $('#message').val().trim();
-        messageKey = 123;
+        userName = $("#name").val().trim();
         // console.log(messageText);
         //This will create a new object in the Firebase with name of localKey
         database.ref(localKey).push({
             message: messageText,
-            key: messageKey,
-            date: Date.now()
+            date: Date.now(),
+            storedKey: localKey,
+            userName: userName
+
         });
     });
 
     // this will only pull messages from the object in Firebase with this session's localKey
-    database.ref(localKey).on("child_added", function (snapshot) {
+    database.ref().on("child_added", function (snapshot) {
         var newDiv = $("<div>");
         var msgText = snapshot.val().message;
         var msgDate = moment(snapshot.val().date).format("HH:mm");
