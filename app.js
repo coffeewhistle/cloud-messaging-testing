@@ -17,10 +17,8 @@ $(document).ready(function () {
     firebase.initializeApp(config);
     var database = firebase.database();
 
-    $("#chat-box").hide();
-
-    $("#start-chat").on("click", function () {
-        $("#chat-box").show();
+    if (localStorage.getItem("localKey") === null) {
+        $("#chat-box").hide();
         var randStr = "";
         for (var letter = 1; letter <= 8; letter++) {
             randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
@@ -29,11 +27,32 @@ $(document).ready(function () {
         //this is used to determine the session for each chat and only pull from that session
         localKey = randStr;
 
-        if (localStorage.getItem("localKey") === null) {
-            localStorage.setItem("localKey", localKey);
-        } else {
-            localKey = localStorage.getItem("localKey");
-        }
+        localStorage.setItem("localKey", localKey);
+
+        getMessages();
+    } else {
+        localKey = localStorage.getItem("localKey");
+        getMessages();
+    }
+
+
+    $("#start-chat").on("click", function () {
+        $("#chat-box").show();
+        // var randStr = "";
+        // for (var letter = 1; letter <= 8; letter++) {
+        //     randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
+        // }
+        // console.log(randStr);
+        // //this is used to determine the session for each chat and only pull from that session
+        // localKey = randStr;
+
+        // if (localStorage.getItem("localKey") === null) {
+        //     localStorage.setItem("localKey", localKey);
+        // } else {
+        //     localKey = localStorage.getItem("localKey");
+        // }
+
+        // getMessages();
     });
 
     $("#send-message").on("click", function () {
@@ -51,20 +70,23 @@ $(document).ready(function () {
     });
 
     // this will only pull messages from the object in Firebase with this session's localKey
-    database.ref().on("child_added", function (snapshot) {
-        var newDiv = $("<div>");
-        var msgText = snapshot.val().message;
-        var msgDate = moment(snapshot.val().date).format("HH:mm");
-        // localKey = snapshot.key;
+    function getMessages() {
+        database.ref(localKey).on("child_added", function (snapshot) {
+            var newDiv = $("<div>");
+            var msgText = snapshot.val().message;
+            var msgDate = moment(snapshot.val().date).format("HH:mm");
+            userName = snapshot.val().userName;
+            // localKey = snapshot.key;
 
-        console.log(msgText);
-        console.log(msgDate);
-        console.log(localKey);
+            console.log(msgText);
+            console.log(msgDate);
+            console.log(localKey);
 
-        var newMessage = newDiv.text(msgText + " - " + msgDate);
+            var newMessage = newDiv.text(userName + ": " + msgText + " - " + msgDate);
 
-        $("#chat-box").append(newMessage);
-    });
+            $("#chat-box").append(newMessage);
+        });
+    }
 
 
 });
