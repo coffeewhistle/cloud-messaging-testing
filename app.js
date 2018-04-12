@@ -22,14 +22,33 @@ $(document).ready(function () {
 
     $("#send-message").on("click", function () {
         messageText = $('#message').val().trim();
+        messageKey = 123;
         console.log(messageText);
-        database.ref().push({
-            message: messageText
-        });
-
-        database.ref().on("value", function (snapshot) {
-            messageKey = snapshot.key;
-            console.log(messageKey);
+        database.ref('messages').push({
+            message: messageText,
+            key: messageKey,
+            date: Date.now()
         });
     });
+
+    database.ref('messages').on("child_added", function (snapshot) {
+        var newDiv = $("<div>");
+        var msgText = snapshot.val().message;
+        var msgDate = moment(snapshot.val().date).format("HH:mm");
+
+        console.log(msgText);
+        console.log(msgDate);
+
+        var newMessage = newDiv.text(msgText + " - " + msgDate);
+
+        $("#chat-box").append(newMessage);
+    });
+
+    function writeMessage(message) {
+        var newDiv = $("<div>");
+
+        $("#message").prepend(newMessage)
+    }
+
+
 });
