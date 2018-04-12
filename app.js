@@ -2,8 +2,13 @@ $(document).ready(function () {
 
     var messageKey = '';
     var messageText = '';
+    var randStr = "";
+    for (var letter = 1; letter <= 8; letter++) {
+        randStr += letter % 2 == 0 ? String.fromCharCode(Math.random() * (91 - 65) + 65) : Math.ceil(Math.random() * 9);
+    }
+    console.log(randStr);
     //this is used to determine the session for each chat and only pull from that session
-    var localKey = 54321;
+    var localKey = randStr;
 
     localStorage.setItem("localKey", localKey);
 
